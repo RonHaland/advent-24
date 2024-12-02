@@ -8,21 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="InputsTest\*">
+	  <None Update="InputsTest\**\*.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+    <None Update="Inputs\**\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Inputs\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-
-  <ItemGroup>
-  	<Folder Include="InputsTest\" />
-  </ItemGroup>
-  
-  <ItemGroup>
-  	<Folder Include="Inputs\" />
   </ItemGroup>
 
 </Project>

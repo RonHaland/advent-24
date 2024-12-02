@@ -8,8 +8,8 @@ while (true)
 
     var days = Assembly.GetExecutingAssembly().DefinedTypes
                             .Where(t => t.IsAssignableTo(typeof(Solution)) && t.Name != "Solution")
-                            .Select(s => (Solution)s!.GetConstructor(Array.Empty<Type>())!
-                                .Invoke(new object[0]));
+                            .Select(s => (Solution)s!.GetConstructor([])!
+                                .Invoke([]));
 
     days = days.OrderBy(n => n.Number);
 
