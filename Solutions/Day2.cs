@@ -12,60 +12,35 @@ internal sealed class Day2 : Solution
         Console.WriteLine("Part1!");
         Console.WriteLine(Part1());
 
-
         Console.WriteLine("Part2!");
         Console.WriteLine(Part2());
     }
 
     private string Part1()
     {
-        var count = InputLines.Where(i => IsSafe(i.Split(" ").Select(n => int.Parse(n))));
-        return count.Count().ToString();
+        var count = InputLines.Count(i => IsSafe(i.Split(" ").Select(n => int.Parse(n))));
+        return count.ToString();
     }
 
     private bool IsSafe(IEnumerable<int> levels)
     {
         var isIncreasing = levels.First() < levels.Last();
-        var safe = levels.Skip(1).Aggregate((true, levels.First()), (prev, curr) =>
+
+        var levelList = isIncreasing ? levels.ToList() : levels.Reverse().ToList();
+        var current = levelList.First();
+
+        for (int i = 1; i < levelList.Count; i++)
         {
-            if (!prev.Item1) return prev;
-            if (isIncreasing && (prev.Item2 >= curr || prev.Item2 + 3 < curr)) 
+            var level = levelList[i];
+            if (current + 3 >= level && current < level)
             {
-                return (false, curr);
+                current = level;
+                continue;
             }
-            if (!isIncreasing && (prev.Item2 <= curr || prev.Item2 > curr + 3))
-            {
-                return (false, curr);
-            }
+            return false;
+        }
 
-            return (true, curr);
-        }).Item1;
-        return safe;
-    }
-
-
-    private bool IsSafeWith1Removed(IEnumerable<int> levels)
-    {
-        var isIncreasing = levels.First() < levels.Last();
-        var safe = levels.Skip(1).Aggregate((true, levels.First(), false), (prev, curr) =>
-        {
-            if (!prev.Item1 && prev.Item3) return prev;
-            if (isIncreasing && (prev.Item2 >= curr || prev.Item2 + 3 < curr))
-            {
-                if (!prev.Item3)
-                    return (true, prev.Item2, true);
-                return (false, curr, true);
-            }
-            if (!isIncreasing && (prev.Item2 <= curr || prev.Item2 > curr + 3))
-            {
-                if (!prev.Item3)
-                    return (true, prev.Item2, true);
-                return (false, curr, true);
-            }
-
-            return (true, curr, prev.Item3);
-        }).Item1;
-        return safe;
+        return true;
     }
 
     private bool IsSafeWithProblemDampener(IEnumerable<int> levels, bool dampened = false)
@@ -98,8 +73,7 @@ internal sealed class Day2 : Solution
 
     private string Part2()
     {
-
-        var count = InputLines.Where(i => IsSafeWithProblemDampener(i.Split(" ").Select(n => int.Parse(n))));
-        return count.Count().ToString();
+        var count = InputLines.Count(i => IsSafeWithProblemDampener(i.Split(" ").Select(n => int.Parse(n))));
+        return count.ToString();
     }
 }

@@ -7,7 +7,7 @@ while (true)
     Console.WriteLine("Enter day to run or press enter to run latest");
 
     var days = Assembly.GetExecutingAssembly().DefinedTypes
-                            .Where(t => t.IsAssignableTo(typeof(Solution)) && t.Name != "Solution")
+                            .Where(t => t.IsAssignableTo(typeof(Solution)) && !t.IsAbstract)
                             .Select(s => (Solution)s!.GetConstructor([])!
                                 .Invoke([]));
 
@@ -27,7 +27,6 @@ while (true)
         solutionToRun = days.Last();
     }
 
-
     Console.WriteLine($"--- Running Day {solutionToRun.Number} with testinput ---");
     solutionToRun.RunTest();
 
@@ -37,7 +36,7 @@ while (true)
     Console.WriteLine("");
     Console.WriteLine("Run another? (y/n)");
     var again = Console.ReadKey();
-    if (again.KeyChar != 'y' && again.KeyChar != 'Y')
+    if (again.KeyChar != '\r' && again.KeyChar != 'y' && again.KeyChar != 'Y')
     {
         break;
     }
