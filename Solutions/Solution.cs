@@ -40,5 +40,10 @@ internal abstract class Solution
         var inputPath = $"./Inputs{(test ? "Test" : "")}/{Number}.txt";
         Input = (File.Exists(inputPath)) ? File.ReadAllText(inputPath) : "";
         InputLines = Input.Split(Environment.NewLine);
+
+        if (string.IsNullOrWhiteSpace(InputLines.Last()))
+        {
+            InputLines = InputLines[..(InputLines.Length - 1)];
+        }
     }
 }
