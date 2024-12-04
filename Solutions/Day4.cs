@@ -29,41 +29,43 @@ internal sealed partial class Day4 : Solution
         {
             for (var x = 0; x < InputLines[y].Length; x++)
             {
-                if (InputLines[y][x] == word.First())
+                if (InputLines[y][x] != word.First())
                 {
-                    foreach(Direction dir in Enum.GetValues<Direction>())
+                    continue;
+                }
+
+                foreach(Direction dir in Enum.GetValues<Direction>())
+                {
+                    var stack = MakeStack(word);
+                    stack.Pop();
+                    var curX = x;
+                    var curY = y;
+                    var failed = false;
+                    while (stack.Count > 0)
                     {
-                        var stack = MakeStack(word);
-                        stack.Pop();
-                        var curX = x;
-                        var curY = y;
-                        var failed = false;
-                        while (stack.Count > 0)
+                        var searchX = curX + DirectionalSearch[dir].Item1;
+                        var searchY = curY + DirectionalSearch[dir].Item2;
+
+                        if (searchX < 0 || searchY < 0 || searchY > InputLines.Length-1 || searchX > InputLines[searchY].Length-1)
                         {
-                            var searchX = curX + DirectionalSearch[dir].Item1;
-                            var searchY = curY + DirectionalSearch[dir].Item2;
-
-                            if (searchX < 0 || searchY < 0 || searchY > InputLines.Length-1 || searchX > InputLines[searchY].Length-1)
-                            {
-                                failed = true;
-                                break;
-                            }
-
-                            if (InputLines[searchY][searchX] != stack.Pop())
-                            {
-                                failed = true;
-                                break;
-                            }
-
-                            curX = searchX;
-                            curY = searchY;
+                            failed = true;
+                            break;
                         }
-                        if (failed)
+
+                        if (InputLines[searchY][searchX] != stack.Pop())
                         {
-                            continue;
+                            failed = true;
+                            break;
                         }
-                        count++;
+
+                        curX = searchX;
+                        curY = searchY;
                     }
+                    if (failed)
+                    {
+                        continue;
+                    }
+                    count++;
                 }
             }
         }
@@ -73,11 +75,30 @@ internal sealed partial class Day4 : Solution
 
     private string Part2()
     {
-        return "";
-    }
+        char[] mustContain = ['M', 'S'];
+        var count = 0;
 
-    [GeneratedRegex("X")]
-    private static partial Regex XRegex();
+        for (int y = 1; y < InputLines.Length-1; y++)
+        {
+            for (int x = 1; x < InputLines[y].Length-1; x++)
+            {
+                if (InputLines[y][x] != 'A')
+                {
+                    continue;
+                }
+
+                char[] NESW = [InputLines[y - 1][x + 1], InputLines[y + 1][x - 1]];
+                char[] SENW = [InputLines[y + 1][x + 1], InputLines[y - 1][x - 1]];
+                var xCross = (ContainsAll(mustContain, NESW) && ContainsAll(mustContain, SENW));
+
+                if (xCross)
+                {
+                    count += 1;
+                }
+            }
+        }
+        return count.ToString();
+    }
 
     private Stack<T> MakeStack<T>(IEnumerable<T> input)
     {
@@ -110,4 +131,9 @@ internal sealed partial class Day4 : Solution
         { Direction.W, (-1, 0) },
         { Direction.NW, (-1, -1) },
     };
+
+    private static bool ContainsAll<T>(IEnumerable<T> first, IEnumerable<T> second)
+    {
+        return first.All(f => second.Contains(f)) && second.All(f => first.Contains(f));
+    }
 }

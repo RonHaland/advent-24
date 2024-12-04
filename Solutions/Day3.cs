@@ -14,7 +14,6 @@ internal sealed partial class Day3 : Solution
         Console.WriteLine("Part1!");
         Console.WriteLine(Part1());
 
-
         Console.WriteLine("Part2!");
         Console.WriteLine(Part2());
     }
