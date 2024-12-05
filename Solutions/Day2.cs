@@ -7,16 +7,7 @@ internal sealed class Day2 : Solution
         
     }
 
-    public override void Run()
-    {
-        Console.WriteLine("Part1!");
-        Console.WriteLine(Part1());
-
-        Console.WriteLine("Part2!");
-        Console.WriteLine(Part2());
-    }
-
-    private string Part1()
+    internal override string Part1()
     {
         var count = InputLines.Count(i => IsSafe(i.Split(" ").Select(n => int.Parse(n))));
         return count.ToString();
@@ -71,7 +62,7 @@ internal sealed class Day2 : Solution
         return true;
     }
 
-    private string Part2()
+    internal override string Part2()
     {
         var count = InputLines.Count(i => IsSafeWithProblemDampener(i.Split(" ").Select(n => int.Parse(n))));
         return count.ToString();

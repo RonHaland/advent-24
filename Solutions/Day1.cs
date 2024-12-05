@@ -7,17 +7,7 @@ internal sealed class Day1 : Solution
         
     }
 
-    public override void Run()
-    {
-        Console.WriteLine("Part1!");
-        Console.WriteLine(Part1());
-
-
-        Console.WriteLine("Part2!");
-        Console.WriteLine(Part2());
-    }
-
-    private string Part1()
+    internal override string Part1()
     {
         var sortedList2 = InputLines.Select(l => l.Split("   ").Last()).Order().ToList();
         var output = InputLines.Select(l => l.Split("   ").First()).Order().Select((n,i) =>
@@ -31,7 +21,7 @@ internal sealed class Day1 : Solution
         return output.ToString();
     }
 
-    private string Part2()
+    internal override string Part2()
     {
         var list1 = InputLines.Select(l => l.Split("   ").First()).ToList();
         var list2 = InputLines.Select(l => l.Split("   ").Last()).ToList();

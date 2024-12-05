@@ -1,4 +1,6 @@
-﻿namespace Advent24.Solutions;
+﻿using System.Diagnostics;
+
+namespace Advent24.Solutions;
 
 internal abstract class Solution
 {
@@ -10,8 +12,27 @@ internal abstract class Solution
     {
         Number = number;
     }
+    internal virtual void Setup() { }
 
-    public abstract void Run();
+    private void InternalRun()
+    {
+        Setup();
+        var sw = Stopwatch.StartNew();
+
+        Console.WriteLine("Part1!");
+        Console.WriteLine(Part1());
+        Console.WriteLine("Took {0} ms", sw.ElapsedMilliseconds);
+        Console.WriteLine();
+        sw.Restart();
+
+        Console.WriteLine("Part2!");
+        Console.WriteLine(Part2());
+        Console.WriteLine("Took {0} ms", sw.ElapsedMilliseconds);
+        Console.WriteLine();
+    }
+
+    internal abstract string Part1();
+    internal abstract string Part2();
 
     public void RunReal()
     {
@@ -21,7 +42,7 @@ internal abstract class Solution
             Console.WriteLine("No input for day {0}", Number);
             return;
         }
-        Run();
+        InternalRun();
     }
 
     public void RunTest()
@@ -32,7 +53,7 @@ internal abstract class Solution
             Console.WriteLine("No test input for day {0}", Number);
             return;
         }
-        Run();
+        InternalRun();
     }
 
     private void ReadInput(bool test = false)

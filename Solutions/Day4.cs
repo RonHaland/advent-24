@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-
-namespace Advent24.Solutions;
+﻿namespace Advent24.Solutions;
 
 internal sealed partial class Day4 : Solution
 {
@@ -10,17 +7,7 @@ internal sealed partial class Day4 : Solution
 
     }
 
-    public override void Run()
-    {
-        Console.WriteLine("Part1!");
-        Console.WriteLine(Part1());
-
-
-        Console.WriteLine("Part2!");
-        Console.WriteLine(Part2());
-    }
-
-    private string Part1()
+    internal override string Part1()
     {
         var word = "XMAS";
         var count = 0;
@@ -73,7 +60,7 @@ internal sealed partial class Day4 : Solution
         return count.ToString();
     }
 
-    private string Part2()
+    internal override string Part2()
     {
         char[] mustContain = ['M', 'S'];
         var count = 0;
@@ -93,14 +80,15 @@ internal sealed partial class Day4 : Solution
 
                 if (xCross)
                 {
-                    count += 1;
+                    count ++;
                 }
             }
         }
+
         return count.ToString();
     }
 
-    private Stack<T> MakeStack<T>(IEnumerable<T> input)
+    private static Stack<T> MakeStack<T>(IEnumerable<T> input)
     {
         return input.Reverse().Aggregate(new Stack<T>(), (prev, cur) =>
         {
@@ -121,7 +109,8 @@ internal sealed partial class Day4 : Solution
         NW
     }
 
-    private Dictionary<Direction, (int, int)> DirectionalSearch = new Dictionary<Direction, (int, int)> { 
+    private readonly Dictionary<Direction, (int, int)> DirectionalSearch = new()
+    { 
         { Direction.N, (0, -1) },
         { Direction.NE, (1, -1) },
         { Direction.E, (1, 0) },

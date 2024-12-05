@@ -8,17 +8,7 @@ internal sealed partial class Day3 : Solution
     {
 
     }
-
-    public override void Run()
-    {
-        Console.WriteLine("Part1!");
-        Console.WriteLine(Part1());
-
-        Console.WriteLine("Part2!");
-        Console.WriteLine(Part2());
-    }
-
-    private string Part1()
+    internal override string Part1()
     {
         var matches = MulRegex().Matches(Input);
 
@@ -29,7 +19,7 @@ internal sealed partial class Day3 : Solution
         return sum.ToString();
     }
 
-    private string Part2() 
+    internal override string Part2() 
     {
         var mulList = MulRegex().Matches(Input).Select(m => (m.Value[4..^1], m.Index));
         var doList = DoRegex().Matches(Input).Select(m => ("TRUE", m.Index));
