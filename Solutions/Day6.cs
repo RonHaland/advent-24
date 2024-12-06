@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace Advent24.Solutions;
+﻿namespace Advent24.Solutions;
 
 internal sealed class Day6 : Solution
 {
@@ -11,35 +8,35 @@ internal sealed class Day6 : Solution
 
     internal override string Part1()
     {
-        var playerLine = InputLines.Single(l => l.Contains('^'));
-        var (playerY, playerX) = (InputLines.ToList().IndexOf(playerLine), playerLine.IndexOf('^'));
-        var visits = new HashSet<(int, int)>();
+        var guardLine = InputLines.Single(l => l.Contains('^'));
+        var (guardY, guardX) = (InputLines.ToList().IndexOf(guardLine), guardLine.IndexOf('^'));
+        var visitedPositions = new HashSet<(int, int)>();
         var direction = Direction.N;
 
-        while (IsInBounds(playerX, playerY))
+        while (IsInBounds(guardX, guardY))
         {
-            visits.Add((playerX, playerY));
-            (playerX, playerY, direction) = Move(playerX, playerY, direction);
+            visitedPositions.Add((guardX, guardY));
+            (guardX, guardY, direction) = Move(guardX, guardY, direction);
         }
 
-        return visits.Count.ToString();
+        return visitedPositions.Count.ToString();
     }
 
-    private (int playerX, int playerY, Direction dir) Move(int playerX, int playerY, Direction dir)
+    private (int guardX, int guardY, Direction dir) Move(int guardX, int guardY, Direction dir)
     {
-        var targetX = playerX + DirectionalMoves[dir].Item1;
-        var targetY = playerY + DirectionalMoves[dir].Item2;
+        var targetX = guardX + DirectionalMoves[dir].Item1;
+        var targetY = guardY + DirectionalMoves[dir].Item2;
         if (!IsInBounds(targetX, targetY)){ return (targetX, targetY, dir); }
 
         if (InputLines[targetY][targetX] == '#') 
         {
             dir = (Direction)(((int)dir + 1) % 4);
-            targetX = playerX + DirectionalMoves[dir].Item1;
-            targetY = playerY + DirectionalMoves[dir].Item2;
+            targetX = guardX + DirectionalMoves[dir].Item1;
+            targetY = guardY + DirectionalMoves[dir].Item2;
         }
-        playerX = targetX; playerY = targetY;
+        guardX = targetX; guardY = targetY;
 
-        return (playerX, playerY, dir);
+        return (guardX, guardY, dir);
     }
 
     private bool IsInBounds(int x, int y)
@@ -47,24 +44,25 @@ internal sealed class Day6 : Solution
         return x >= 0 
             && y >= 0 
             && x < InputLines.Max(c => c.Length) 
-            && y < InputLines.Count();
+            && y < InputLines.Length;
     }
 
     internal override string Part2()
     {
-        var playerLine = InputLines.Single(l => l.Contains('^'));
-        var (playerY, playerX) = (InputLines.ToList().IndexOf(playerLine), playerLine.IndexOf('^'));
-        var visits = new HashSet<(int, int)>();
+        var guardLine = InputLines.Single(l => l.Contains('^'));
+        var (guardY, guardX) = (InputLines.ToList().IndexOf(guardLine), guardLine.IndexOf('^'));
         var direction = Direction.N;
         var resultsInLoop = new HashSet<(int, int)>();
+        var mustBeClearPositions = new HashSet<(int, int)>();
 
-        while (IsInBounds(playerX, playerY))
+        while (IsInBounds(guardX, guardY))
         {
-            visits.Add((playerX, playerY));
-            (playerX, playerY, direction) = Move(playerX, playerY, direction);
-            if (IsInBounds(playerX, playerY) && ResultsInLoop(playerX, playerY, direction))
+            mustBeClearPositions.Add((guardX, guardY));
+            (guardX, guardY, direction) = Move(guardX, guardY, direction);
+
+            if (IsInBounds(guardX, guardY) && !mustBeClearPositions.Contains((guardX, guardY)) && ResultsInLoop(guardX, guardY, direction))
             {
-                resultsInLoop.Add((playerX, playerY));
+                resultsInLoop.Add((guardX, guardY));
             }
         }
 
@@ -78,45 +76,45 @@ internal sealed class Day6 : Solution
 
         List<(int, int, Direction)> hitBlockers = [(x,y,direction)];
 
-        List<Direction> subDirections = direction == Direction.W ? directions : [.. directions[directions.IndexOf(direction+1)..], .. directions[..directions.IndexOf(direction+1)]];
-        Queue<Direction> dirQueue = new (subDirections);
-        var moves = 0;
+        //Put reorder so that current direction is last in queue.
+        List<Direction> nextDirections = direction == Direction.W ? 
+                directions : 
+                [.. directions[directions.IndexOf(direction+1)..], .. directions[..directions.IndexOf(direction+1)]];
 
-        while (dirQueue.Count > 0)
+        Queue<Direction> directionQueue = new (nextDirections);
+
+        while (directionQueue.Count > 0)
         {
-            var directionalMoves = 0;
-            var subDir = dirQueue.Dequeue();
-            var subDirOB = false;
+            var searchDirection = directionQueue.Dequeue();
+            var searchIsOutOfBounds = false;
             while (true)
             {
-                scanX = scanX + DirectionalMoves[subDir].Item1;
-                scanY = scanY + DirectionalMoves[subDir].Item2;
+                scanX += DirectionalMoves[searchDirection].Item1;
+                scanY += DirectionalMoves[searchDirection].Item2;
                 if (!IsInBounds(scanX, scanY))
                 {
-                    subDirOB = true;
+                    searchIsOutOfBounds = true;
                     break;
                 }
 
                 if (InputLines[scanY][scanX] is '#' || (x,y) == (scanX, scanY))
                 {
                     //hit
-                    if (hitBlockers.Contains((scanX, scanY, subDir)))
+                    if (hitBlockers.Contains((scanX, scanY, searchDirection)))
                     {
                         //loop
-                        Console.WriteLine("[{0}, {1}] causes loop", x, y);
                         return true;
                     }
-                    hitBlockers.Add((scanX, scanY, subDir));
-                    scanX = scanX - DirectionalMoves[subDir].Item1;
-                    scanY = scanY - DirectionalMoves[subDir].Item2;
+                    hitBlockers.Add((scanX, scanY, searchDirection));
+                    scanX -= DirectionalMoves[searchDirection].Item1;
+                    scanY -= DirectionalMoves[searchDirection].Item2;
                     break;
                 }
-                directionalMoves++;
-                moves++;
-                if (moves > 10000) { Console.WriteLine("super long loop"); return false; }
+
             }
-            if (subDirOB) break;
-            dirQueue.Enqueue(subDir);
+            if (searchIsOutOfBounds) break; // no loop
+
+            directionQueue.Enqueue(searchDirection);
         }
 
         return false;
