@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Text;
-
-namespace Advent24.Solutions;
+﻿namespace Advent24.Solutions;
 
 internal sealed class Day9 : Solution
 {
@@ -61,6 +58,62 @@ internal sealed class Day9 : Solution
 
     internal override string Part2()
     {
-        return "";
+        List<Block> unpacked = [];
+        for (var i = 0; i < Input.Length; i++)
+        {
+            var size = int.Parse(Input[i].ToString());
+            if (i % 2 == 0)
+            {
+                //file block
+                var newFiles = new Block(size, i/2);
+                unpacked.AddRange(newFiles);
+                continue;
+            }
+
+            //empty block
+            var newEmptyBlocks = new Block(size, -1);
+            unpacked.AddRange(newEmptyBlocks);
+        }
+
+        var defragmented = Defragment(unpacked);
+        return CalculateChecksum(defragmented).ToString();
+    }
+    private int[] Defragment(List<Block> unpacked)
+    {
+        var list = unpacked.ToList();
+
+        foreach (var block in list.Where(b => b.Value != -1).Reverse()) 
+        {
+            var size = block.Length;
+            var targetEmptyBlock = list.FirstOrDefault(c => c.Length >= size && c.Value == -1);
+            if (targetEmptyBlock is null)
+            {
+                continue;
+            }
+
+            var emptyBlockIndex = list.IndexOf(targetEmptyBlock);
+            var blockIndex = list.IndexOf(block);
+
+            if (blockIndex < emptyBlockIndex)
+            {
+                continue;
+            }
+
+            //Empty Old location
+            list[blockIndex] = new Block(size, -1);
+            list[emptyBlockIndex] = block;
+
+            if (targetEmptyBlock.Length != size) //Add size diff padding
+                list.Insert(emptyBlockIndex + 1, new Block(targetEmptyBlock.Length - size, -1));
+        }
+
+        return list.SelectMany(l => Enumerable.Range(0, l.Length).Select(s => l.Value)).ToArray();
+    }
+
+
+    internal class Block(int length, int value)
+    {
+        public int Length { get; set; } = length;
+        public int Value { get; set; } = value;
     }
 }
