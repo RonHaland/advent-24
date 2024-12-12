@@ -56,7 +56,6 @@ internal sealed class Day10 : Solution
                 return 0;
             return Children.Sum(c => c.GetRating());
         }
-
     }
 
     private void FindNextSteps(Step step, int x, int y)

@@ -9,7 +9,7 @@ internal sealed class Day9 : Solution
 
     internal override string Part1()
     {
-        int[] unpacked = [];
+        List<int> unpacked = [];
         for (var i = 0; i < Input.Length; i++)
         {
             var size = int.Parse(Input[i].ToString());
@@ -17,13 +17,13 @@ internal sealed class Day9 : Solution
             {
                 //file block
                 var newFiles = Enumerable.Range(0, size).Select(c => i / 2);
-                unpacked = [.. unpacked, .. newFiles];
+                unpacked.AddRange(newFiles);
                 continue;
             }
 
             //empty block
             var newEmptyBlocks = Enumerable.Range(0, size).Select(c => -1);
-            unpacked = [.. unpacked, .. newEmptyBlocks];
+            unpacked.AddRange(newEmptyBlocks);
         }
 
         var defragmented = Defragment(unpacked);
@@ -31,9 +31,8 @@ internal sealed class Day9 : Solution
         return CalculateChecksum(defragmented).ToString();
     }
 
-    private int[] Defragment(int[] unpacked)
+    private int[] Defragment(List<int> list)
     {
-        var list = unpacked.ToList();
         var firstEmpty = list.IndexOf(-1);
         var lastFile = list.FindLastIndex(c => c != -1);
 
