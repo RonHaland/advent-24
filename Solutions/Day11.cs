@@ -45,41 +45,25 @@ internal sealed class Day11 : Solution
 
     internal override string Part2()
     {
-        long[] initialStones = Input.Split(' ').Select(long.Parse).ToArray();
-        var counts = 0;
+        var initialStones = Input.Split(' ').Select(long.Parse).ToDictionary(k => k, v => 1L);
+        var iterationStones = initialStones;
 
         foreach (var n in Enumerable.Range(0, 75))
         {
             //Key: Stone value, Value: count
-            var iterationStones = new Dictionary<long, long>();
+            var nextIterationStones = new Dictionary<long, long>();
 
             foreach (var stone in iterationStones) 
             {
-                var nextStones = ExecuteRulesOnStone(stone.Value);
-
+                var nextStones = ExecuteRulesOnStone(stone.Key);
+                foreach (var nextStone in nextStones) 
+                {
+                    nextIterationStones[nextStone] = nextIterationStones.TryGetValue(nextStone, out var val) ? val + stone.Value : stone.Value;
+                }
             }
 
+            iterationStones = nextIterationStones;
         }
-
-            //Parallel.ForEach(initialStones, (initialStone) =>
-            //{
-            //    List<long> stones = [initialStone];
-            //    foreach (var n in Enumerable.Range(0, 75))
-            //    {
-            //        var stoneCount = stones.Count;
-            //        List<long> newStoneOrder = [];
-            //        foreach (var i in Enumerable.Range(0, stoneCount))
-            //        {
-            //            var resultStones = ExecuteRulesOnStone(stones[i]);
-            //            newStoneOrder.AddRange(resultStones);
-            //        }
-            //        stones = newStoneOrder;
-
-            //        Console.WriteLine("Done iteration {0} for stone {1}", n, initialStone);
-            //    }
-            //    counts += stones.Count;
-            //});
-
-            return counts.ToString();
+        return iterationStones.Sum(v => v.Value).ToString();
     }
 }
